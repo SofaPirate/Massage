@@ -1,4 +1,4 @@
-Massenger-Arduino
+Massenger
 =================
 
 Simple serial message protocol for Arduino and friends
