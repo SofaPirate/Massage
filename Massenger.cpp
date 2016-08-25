@@ -7,174 +7,199 @@ extern "C" {
 
 #include "Massenger.h"
 
-
-/*
-Massenger::Massenger()
+Massenger::Massenger(byte _mode, Stream* _serial)
 {
-	init(' ');
+	serial = _serial;
+  mode   = _mode;
 }
-*/
 
-Massenger::Massenger( Stream * _cereal , massengerCallbackFunction _callback )
-{	
-	serial = _cereal;
-	callback = _callback;
-	buffer[MASSENGERBUFFERLAST] = 0;
-	reset();
-	
-}
-/*
-Massenger::Massenger(char separator)
+bool Massenger::receive()
 {
-	if (separator == 10 || separator == 13 || separator == 0)  separator = 32;
-	init(separator);
-}
-*/
+  // Flush.
+  flush();
 
-
-
-
- void Massenger::send(char *string, int value) {
-	serial->print(string);
-	serial->write(32);
-	serial->println(value);
- 
- }
-
-void Massenger::reset() {
-
-        bufferIndex = 0;
-		tail = buffer;
-		/*
-        messageState = 0;
-        current = NULL;
-        last = NULL;
-        dumped = 1;*/
-}
-
-
-uint8_t Massenger::checkAddr(char *string) {
-	
-	return strcmp(string,buffer) == 0;
-	
-}
-
-int Massenger::getInt() {
-
-    return atoi(tail);
-     
-}
-
-// Added based on a suggestion by G. Paolo Sanino
-/*
-long Massenger::readLong() {
-
-	if (next()) {
-		dumped = 1;
-		return atol(current); // atol for long instead of atoi for int variables
-	}
-	return 0;
-
-}
-
-char Massenger::readChar() {
-
-  if (next()) {
-  	 dumped = 1;
-  	 return current[0];
- }
-  return 0;
-
-}
-
-double Massenger::readDouble() {
-    if(next()) {
-        dumped = 1;
-        return atof(current);
-    }
-    return 0;
-}
-
-void Massenger::copyString(char *string, uint8_t size) {
-	
-	if (next()) {
-		dumped = 1;
-		strlcpy(string,current,size);
-	} else {
-		if ( size ) string[0] = '\0';
-	}
-}
-*/
-
-
-
-
-/*
-uint8_t Massenger::next() {
-
-  char * temppointer= NULL;
-  switch (messageState) {
-  case 0:
-    return 0;
-  case 1:
-    temppointer = buffer;
-    messageState = 2;
-  default:
-    if (dumped) current = strtok_r(temppointer,token,&last);
-    if (current != NULL) {
-    	dumped = 0;
-    	return 1; 
-	}
+  // Read serial.
+  while (serial->available())
+  {
+    if (_process(serial->read()))
+      return true;
   }
-  
-  return 0;
-}*/
-/*
-uint8_t Massenger::available() {
-	
-  return next();
-  
-}
-*/
 
-void Massenger::update() {
-	
-
-	 while ( serial->available( ) ) process( serial->read( ) );
-	
+  return false;
 }
 
+void Massenger::Massenger::Massenger::flush()
+{
+  nextIndex = bufferSize = 0;
+}
 
-void Massenger::process(int serialByte) {
+bool Massenger::dispatch(const char* address, massengerCallbackFunction callback)
+{
+  bool matches = (strcmp(buffer, address) == 0);
+  if (matches) callback();
+  return matches;
+}
 
+int8_t Massenger::nextByte(bool* error) {
+  return (int8_t) nextInt(error);
+}
 
-    if (serialByte > 0) {
+int16_t Massenger::nextInt(bool* error)
+{
+  bool err = (nextIndex >= bufferSize);
+  if (error) *error = err;
+  if (err) return 0;
 
-      switch (serialByte) {
-      case 0: 
-      	break;
-      case 10: // LF
-        break;
-      case 13: // CR
-        buffer[bufferIndex]=0;
-        (*callback)();
-        reset();
-        break;
-	  case 32:
-	    buffer[bufferIndex]=0;
-	    bufferIndex++;
-		if (bufferIndex >= MASSENGERBUFFERSAFE) reset();
-		tail = buffer+bufferIndex;
-      default:
-          buffer[bufferIndex]=serialByte;
-          bufferIndex++;
-           if (bufferIndex >= MASSENGERBUFFERSAFE) reset();
-         }
-      } 
-	 
-      
-      //return messageState;
- }
+  int16_t value = atoi(&buffer[nextIndex]);
+  _updateNextIndex();
+  return value;
+}
 
+int32_t Massenger::nextLong(bool* error)
+{
+  bool err = (nextIndex >= bufferSize);
+  if (error) *error = err;
+  if (err) return 0;
 
+  // TODO: reimplement using strtol() to catch errors
+  // cf. http://stackoverflow.com/questions/8871711/atoi-how-to-identify-the-difference-between-zero-and-error
+  int16_t value = atol(&buffer[nextIndex]);
+  _updateNextIndex();
+  return value;
+}
 
+/// Reads next float.
+float Massenger::nextFloat(bool* error)
+{
+  return (float) nextDouble(error);
+}
+
+double Massenger::nextDouble(bool* error)
+{
+  bool err = (nextIndex >= bufferSize);
+  if (error) *error = err;
+  if (err) return 0;
+  double value = atof(&buffer[nextIndex]);
+  _updateNextIndex();
+  return value;
+}
+
+void Massenger::sendBegin(const char* address)
+{
+  serial->print(address);
+}
+
+void Massenger::sendByte(uint8_t value)
+{
+  sendLong(value, error);
+}
+
+void Massenger::sendInt(int16_t value)
+{
+  sendLong(value, error);
+}
+
+void Massenger::sendLong(int32_t value)
+{
+  serial->write(' ');
+  serial->print(value);
+}
+
+void Massenger::sendFloat(float value)
+{
+  sendDouble(value, error);
+}
+
+void Massenger::sendDouble(double value)
+{
+  serial->write(' ');
+  serial->print(value);
+}
+
+void Massenger::sendEnd()
+{
+  serial->write('\n');
+}
+
+void Massenger::send(const char *address)
+{
+  sendBegin(address);
+  sendEnd();
+}
+
+void Massenger::sendByte(const char *address, uint8_t value)
+{
+  sendBegin(address);
+  sendByte(value);
+  sendEnd();
+}
+
+void Massenger::sendInt(const char *address, int16_t value)
+{
+  sendBegin(address);
+  sendInt(value);
+  sendEnd();
+}
+
+void Massenger::sendLong(const char *address, int32_t value)
+{
+  sendBegin(address);
+  sendLong(value);
+  sendEnd();
+}
+
+void Massenger::sendFloat(const char *address, float value)
+{
+  sendBegin(address);
+  sendFloat(value);
+  sendEnd();
+}
+
+void Massenger::sendDouble(const char *address, double value)
+{
+  sendBegin(address);
+  sendDouble(value);
+  sendEnd();
+}
+
+bool Massenger::_updateNextIndex()
+{
+  while (buffer[nextIndex] != 0)
+    nextIndex++;
+  nextIndex++;
+  return (nextIndex < bufferSize);
+}
+
+bool Massenger::_process(int serialByte)
+{
+  switch (serialByte) {
+    case '\n': // LF
+    case '\r': // CR
+      if (bufferSize > 0)
+      {
+        if (buffer[bufferSize-1] != 0)
+          buffer[bufferSize++] = 0;
+
+        // Position nextIndex after command address string.
+        nextIndex = 0;
+        _updateNextIndex();
+
+        return true;
+      }
+      break;
+    case ' ':
+      // Put null character instead of space to easily use atoi()/atof() functions.
+      if (bufferSize > 0 && buffer[bufferSize-1] != 0)
+      {
+        buffer[bufferSize++] = 0;
+        if (bufferSize >= MASSENGERBUFFERSAFE) flush();
+        else tail = buffer+bufferSize;
+      }
+      break;
+    default: // caught a non-reserved character
+      buffer[bufferSize++] = serialByte;
+      if (bufferSize >= MASSENGERBUFFERSAFE) flush();
+  }
+
+  return false;
+}
