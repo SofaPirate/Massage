@@ -98,7 +98,7 @@ private:
   bool _hasNext() const;
 
 private:
-  void _process(int serialByte);
+  bool _process(int serialByte);
 
   char* tail; // Pointer to tail
   char* last;

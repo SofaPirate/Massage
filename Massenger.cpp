@@ -91,12 +91,12 @@ void Massenger::sendBegin(const char* address)
 
 void Massenger::sendByte(uint8_t value)
 {
-  sendLong(value, error);
+  sendLong(value);
 }
 
 void Massenger::sendInt(int16_t value)
 {
-  sendLong(value, error);
+  sendLong(value);
 }
 
 void Massenger::sendLong(int32_t value)
@@ -107,7 +107,7 @@ void Massenger::sendLong(int32_t value)
 
 void Massenger::sendFloat(float value)
 {
-  sendDouble(value, error);
+  sendDouble(value);
 }
 
 void Massenger::sendDouble(double value)
