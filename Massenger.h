@@ -1,9 +1,7 @@
 
 #ifndef Massenger_h
 #define Massenger_h
-#define MASSENGERBUFFERSIZE 128
-#define MASSENGERBUFFERLAST 127
-#define MASSENGERBUFFERSAFE 126
+#define MASSENGER_BUFFERSIZE 128
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
@@ -11,19 +9,16 @@
 #include "WProgram.h"
 #endif
 
-extern "C" {
-// callback function
-    typedef void (*massengerCallbackFunction)(void);
-}
-
 #define MASSENGER_ASCII  0
 #define MASSENGER_BINARY 1
 #define MASSENGER_AUTO   2
 
 class Massenger
 {
-public:
+  typedef void (*callbackFunction)(void);
 
+public:
+  // Constructor.
   Massenger(byte mode=MASSENGER_AUTO, Stream* serial=&Serial);
 
   /**
@@ -36,7 +31,7 @@ public:
   void flush();
 
   /// If current message matches "address", calls function "callback" and returns true.
-  bool dispatch(const char* address, massengerCallbackFunction callback);
+  bool dispatch(const char* address, callbackFunction callback);
 
   /// Reads next byte.
   int8_t nextByte(bool* error=0);
@@ -93,24 +88,29 @@ public:
   void sendDouble(const char *address, double value);
 
 private:
-  int _nextBlob(uint8_t* data, size_t size);
+  // Moves nextIndex to the next token.
   bool _updateNextIndex();
+
+  // Returns true iff it is still possible to call next*().
   bool _hasNext() const;
 
-private:
+  // Process a single value read from the serial stream.
   bool _process(int serialByte);
 
-  char* tail; // Pointer to tail
-  char* last;
-
+  // Pointer to the stream read by this object.
   Stream* serial;
+
+  // Messenging mode (ASCII, BINARY/SLIP, AUTO).
   byte mode;
 
-  char token[2];
+  // Size of buffer.
+  uint8_t bufferSize;
 
-  uint8_t bufferSize; // size of buffer
-  uint8_t nextIndex; // index in the buffer of next argument to read
-  char buffer[MASSENGERBUFFERSIZE]; // Buffer that holds the data
+  // Index in the buffer of next argument to read.
+  uint8_t nextIndex;
+
+  // Buffer that holds the data for current message.
+  char buffer[MASSENGER_BUFFERSIZE];
 };
 
 #endif

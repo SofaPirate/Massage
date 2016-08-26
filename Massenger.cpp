@@ -1,5 +1,3 @@
-
-
 //ADDED FOR COMPATIBILITY WITH WIRING
 extern "C" {
   #include <stdlib.h>
@@ -33,7 +31,7 @@ void Massenger::Massenger::Massenger::flush()
   nextIndex = bufferSize = 0;
 }
 
-bool Massenger::dispatch(const char* address, massengerCallbackFunction callback)
+bool Massenger::dispatch(const char* address, callbackFunction callback)
 {
   bool matches = (strcmp(buffer, address) == 0);
   if (matches) callback();
@@ -68,7 +66,6 @@ int32_t Massenger::nextLong(bool* error)
   return value;
 }
 
-/// Reads next float.
 float Massenger::nextFloat(bool* error)
 {
   return (float) nextDouble(error);
@@ -172,10 +169,19 @@ bool Massenger::_updateNextIndex()
 
 bool Massenger::_process(int serialByte)
 {
+  // Check if we've reached the end of the buffer.
+  if (bufferSize >= (MASSENGER_BUFFERSIZE-1))
+  {
+    bufferSize = MASSENGER_BUFFERSIZE-1;
+    buffer[bufferSize++] = 0;
+    return true;
+  }
+
+  // Process byte.
   switch (serialByte) {
     case '\n': // LF
     case '\r': // CR
-      if (bufferSize > 0)
+      if (bufferSize > 0) // only process this if we are *not* at beginning
       {
         if (buffer[bufferSize-1] != 0)
           buffer[bufferSize++] = 0;
@@ -192,13 +198,10 @@ bool Massenger::_process(int serialByte)
       if (bufferSize > 0 && buffer[bufferSize-1] != 0)
       {
         buffer[bufferSize++] = 0;
-        if (bufferSize >= MASSENGERBUFFERSAFE) flush();
-        else tail = buffer+bufferSize;
       }
       break;
     default: // caught a non-reserved character
       buffer[bufferSize++] = serialByte;
-      if (bufferSize >= MASSENGERBUFFERSAFE) flush();
   }
 
   return false;
