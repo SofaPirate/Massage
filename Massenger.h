@@ -16,9 +16,9 @@ extern "C" {
     typedef void (*massengerCallbackFunction)(void);
 }
 
-#define MASSENGER_ASCII 0
-#define MASSENGER_SLIP  1
-#define MASSENGER_AUTO  2
+#define MASSENGER_ASCII  0
+#define MASSENGER_BINARY 1
+#define MASSENGER_AUTO   2
 
 class Massenger
 {
