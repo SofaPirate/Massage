@@ -99,11 +99,18 @@ private:
 
   // Write value to buffer (returns false if buffer is full and cannot be written to).
   bool _write(uint8_t value);
+
+  // Send *n* bytes of *data* to serial using SLIP.
+  void _sendSlipData(const uint8_t* data, size_t n);
+
   // Pointer to the stream read by this object.
   Stream* serial;
 
   // Messenging mode (ASCII, BINARY/SLIP, AUTO).
   byte mode;
+
+  // SLIP decoding state: currently escaping.
+  bool slipEscaping;
 
   // Size of buffer.
   uint8_t bufferSize;

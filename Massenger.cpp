@@ -9,6 +9,8 @@ Massenger::Massenger(byte _mode, Stream* _serial)
 {
 	serial = _serial;
   mode   = _mode;
+
+  slipEscaping = false;
 }
 
 bool Massenger::receive()
@@ -167,6 +169,11 @@ bool Massenger::_updateNextIndex()
   return (nextIndex < bufferSize);
 }
 
+#define MASSENGER_SLIP_END     0xC0
+#define MASSENGER_SLIP_ESC     0xDB
+#define MASSENGER_SLIP_ESC_END 0xDC
+#define MASSENGER_SLIP_ESC_ESC 0xDD
+
 bool Massenger::_process(int serialByte)
 {
   // ASCII mode. ///////////////////////////////////////////
@@ -181,7 +188,8 @@ bool Massenger::_process(int serialByte)
     }
 
     // Process byte.
-    switch (serialByte) {
+    switch (serialByte)
+    {
       case '\n': // LF
       case '\r': // CR
         if (bufferSize > 0) // only process this if we are *not* at beginning
@@ -207,11 +215,76 @@ bool Massenger::_process(int serialByte)
         _write(serialByte);
     }
 
+  }
+  // Binary/SLIP mode. /////////////////////////////////////
+  else
+  {
+    byte value = 0;
 
-        return true;
-      }
-      }
+    // Check if we've reached the end of the buffer.
+    if (bufferSize >= MASSENGER_BUFFERSIZE)
+    {
+      bufferSize = MASSENGER_BUFFERSIZE;
+      return true;
+    }
+
+    // Process byte.
+    slipEscaping = false; // reset
+    switch (serialByte) {
+      case MASSENGER_SLIP_END:
+        if (bufferSize > 0) // only process this if we are *not* at beginning
+        {
+          // Position nextIndex after command address string.
+          nextIndex = 0;
+          _updateNextIndex();
+
+          return true;
+        }
+        break;
+
+      case MASSENGER_SLIP_ESC:
+        slipEscaping = true;
+        break;
+
+      case MASSENGER_SLIP_ESC_END:
+        _write(slipEscaping ? MASSENGER_SLIP_END : MASSENGER_SLIP_ESC_END);
+        break;
+      case MASSENGER_SLIP_ESC_ESC:
+        _write(slipEscaping ? MASSENGER_SLIP_ESC : MASSENGER_SLIP_ESC_ESC);
+        break;
+
+      default:
+        _write(serialByte);
+    }
   }
 
   return false;
+}
+
+bool Massenger::_write(uint8_t value)
+{
+  if (bufferSize >= MASSENGER_BUFFERSIZE)
+    return false;
+  buffer[bufferSize++] = value;
+}
+
+void Massenger::_sendSlipData(const uint8_t* data, size_t n)
+{
+  while (n--)
+  {
+    uint8_t value = *data++;
+    switch (value)
+    {
+      case MASSENGER_SLIP_END:
+        serial->write(MASSENGER_SLIP_ESC);
+        serial->write(MASSENGER_SLIP_ESC_END);
+        break;
+      case MASSENGER_SLIP_ESC:
+        serial->write(MASSENGER_SLIP_ESC);
+        serial->write(MASSENGER_SLIP_ESC_ESC);
+        break;
+      default:
+        serial->write(value);
+    }
+  }
 }
