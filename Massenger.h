@@ -97,6 +97,8 @@ private:
   // Process a single value read from the serial stream.
   bool _process(int serialByte);
 
+  // Write value to buffer (returns false if buffer is full and cannot be written to).
+  bool _write(uint8_t value);
   // Pointer to the stream read by this object.
   Stream* serial;
 

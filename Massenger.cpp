@@ -169,39 +169,48 @@ bool Massenger::_updateNextIndex()
 
 bool Massenger::_process(int serialByte)
 {
-  // Check if we've reached the end of the buffer.
-  if (bufferSize >= (MASSENGER_BUFFERSIZE-1))
+  // ASCII mode. ///////////////////////////////////////////
+  if (mode == MASSENGER_ASCII)
   {
-    bufferSize = MASSENGER_BUFFERSIZE-1;
-    buffer[bufferSize++] = 0;
-    return true;
-  }
+    // Check if we've reached the end of the buffer.
+    if (bufferSize >= (MASSENGER_BUFFERSIZE-1))
+    {
+      bufferSize = MASSENGER_BUFFERSIZE-1;
+      _write(0);
+      return true;
+    }
 
-  // Process byte.
-  switch (serialByte) {
-    case '\n': // LF
-    case '\r': // CR
-      if (bufferSize > 0) // only process this if we are *not* at beginning
-      {
-        if (buffer[bufferSize-1] != 0)
-          buffer[bufferSize++] = 0;
+    // Process byte.
+    switch (serialByte) {
+      case '\n': // LF
+      case '\r': // CR
+        if (bufferSize > 0) // only process this if we are *not* at beginning
+        {
+          if (buffer[bufferSize-1] != 0)
+            _write(0);
 
-        // Position nextIndex after command address string.
-        nextIndex = 0;
-        _updateNextIndex();
+          // Position nextIndex after command address string.
+          nextIndex = 0;
+          _updateNextIndex();
+
+          return true;
+        }
+        break;
+      case ' ':
+        // Put null character instead of space to easily use atoi()/atof() functions.
+        if (bufferSize > 0 && buffer[bufferSize-1] != 0)
+        {
+          _write(0);
+        }
+        break;
+      default: // caught a non-reserved character
+        _write(serialByte);
+    }
+
 
         return true;
       }
-      break;
-    case ' ':
-      // Put null character instead of space to easily use atoi()/atof() functions.
-      if (bufferSize > 0 && buffer[bufferSize-1] != 0)
-      {
-        buffer[bufferSize++] = 0;
       }
-      break;
-    default: // caught a non-reserved character
-      buffer[bufferSize++] = serialByte;
   }
 
   return false;
