@@ -31,6 +31,7 @@ bool Massenger::receive()
 void Massenger::Massenger::Massenger::flush()
 {
   _nextIndex = _messageSize = 0;
+  _slipEscaping = false;
 }
 
 bool Massenger::dispatch(const char* address, callbackFunction callback)
