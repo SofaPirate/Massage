@@ -1,7 +1,6 @@
 
 #ifndef Massenger_h
 #define Massenger_h
-#define MASSENGER_BUFFERSIZE 128
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
@@ -9,16 +8,30 @@
 #include "WProgram.h"
 #endif
 
+/// ASCII mode.
 #define MASSENGER_ASCII  0
+
+/// Binary/SLIP mode.
 #define MASSENGER_BINARY 1
+
+/// "Auto" mode (experimental).
 #define MASSENGER_AUTO   2
 
+#ifndef MASSENGER_BUFFERSIZE
+/**
+ * Max. size of message buffer. Can be predefined before including Massenger.h
+ * to increase/decrease size.
+ */
+#define MASSENGER_BUFFERSIZE 128
+#endif
+
+/// Main Massenger class.
 class Massenger
 {
   typedef void (*callbackFunction)(void);
 
 public:
-  // Constructor.
+  /// Constructor.
   Massenger(byte mode=MASSENGER_AUTO, Stream* stream=&Serial);
 
   /**

@@ -174,6 +174,7 @@ bool Massenger::_hasNext() const {
   return (_nextIndex < _messageSize);
 }
 
+// Internal. SLIP reserved codes.
 #define MASSENGER_SLIP_END     0xC0
 #define MASSENGER_SLIP_ESC     0xDB
 #define MASSENGER_SLIP_ESC_END 0xDC
