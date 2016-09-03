@@ -46,7 +46,7 @@ int8_t Massenger::nextByte(bool* error) {
 
 int16_t Massenger::nextInt(bool* error)
 {
-  bool err = (nextIndex >= bufferSize);
+  bool err = !_hasNext();
   if (error) *error = err;
   if (err) return 0;
 
@@ -57,7 +57,7 @@ int16_t Massenger::nextInt(bool* error)
 
 int32_t Massenger::nextLong(bool* error)
 {
-  bool err = (nextIndex >= bufferSize);
+  bool err = !_hasNext();
   if (error) *error = err;
   if (err) return 0;
 
@@ -75,7 +75,7 @@ float Massenger::nextFloat(bool* error)
 
 double Massenger::nextDouble(bool* error)
 {
-  bool err = (nextIndex >= bufferSize);
+  bool err = !_hasNext();
   if (error) *error = err;
   if (err) return 0;
   double value = atof(&buffer[nextIndex]);
