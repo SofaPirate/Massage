@@ -1,4 +1,3 @@
-
 #ifndef Massenger_h
 #define Massenger_h
 
@@ -118,6 +117,12 @@ private:
 
   // Returns true iff it is still possible to call next*().
   bool _hasNext() const;
+
+  // Helper function to read next integer (byte, int, long).
+  void _nextInteger(uint8_t* value, size_t n, bool* error);
+
+  // Helper function to read next real (float/double).
+  void _nextReal(uint8_t* value, size_t n, bool* error);
 
   // Processes a single value read from the serial stream.
   bool _process(int serialByte);

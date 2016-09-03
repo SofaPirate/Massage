@@ -42,47 +42,37 @@ bool Massenger::dispatch(const char* address, callbackFunction callback)
 }
 
 int8_t Massenger::nextByte(bool* error) {
-  return (int8_t) nextInt(error);
+  int8_t v;
+  _nextInteger((uint8_t*)&v, sizeof(int8_t), error);
+  return v;
 }
 
 int16_t Massenger::nextInt(bool* error)
 {
-  bool err = !_hasNext();
-  if (error) *error = err;
-  if (err) return 0;
-
-  int16_t value = atoi(&_buffer[_nextIndex]);
-  _updateNextIndex();
-  return value;
+  int16_t v;
+  _nextInteger((uint8_t*)&v, sizeof(int16_t), error);
+  return v;
 }
 
 int32_t Massenger::nextLong(bool* error)
 {
-  bool err = !_hasNext();
-  if (error) *error = err;
-  if (err) return 0;
-
-  // TODO: reimplement using strtol() to catch errors
-  // cf. http://stackoverflow.com/questions/8871711/atoi-how-to-identify-the-difference-between-zero-and-error
-  int16_t value = atol(&_buffer[_nextIndex]);
-  _updateNextIndex();
-  return value;
+  int32_t v;
+  _nextInteger((uint8_t*)&v, sizeof(int32_t), error);
+  return v;
 }
 
 float Massenger::nextFloat(bool* error)
 {
-  return (float) nextDouble(error);
+  float v;
+  _nextReal((uint8_t*)&v, sizeof(float), error);
+  return v;
 }
 
 double Massenger::nextDouble(bool* error)
 {
-  bool err = !_hasNext();
-  if (error) *error = err;
-  if (err) return 0;
-
-  double value = atof(&_buffer[_nextIndex]);
-  _updateNextIndex();
-  return value;
+  double v;
+  _nextReal((uint8_t*)&v, sizeof(double), error);
+  return v;
 }
 
 void Massenger::sendBegin(const char* address)
@@ -184,6 +174,50 @@ bool Massenger::_updateNextIndex()
 
 bool Massenger::_hasNext() const {
   return (_nextIndex < _messageSize);
+}
+
+void Massenger::_nextInteger(uint8_t* number, size_t n, bool* error)
+{
+  bool err = !_hasNext();
+  if (error) *error = err;
+
+  if (err)
+    memset(number, 0, n); // set to zero (default)
+
+  else if (isAscii())
+  {
+    long val = strtol(&_buffer[_nextIndex], 0, 10);
+    memcpy(number, &val, n);
+    _updateNextIndex();
+  }
+
+  else
+  {
+    memcpy(number, &_buffer[_nextIndex], n);
+    _nextIndex += n;
+  }
+}
+
+void Massenger::_nextReal(uint8_t* value, size_t n, bool* error)
+{
+  bool err = !_hasNext();
+  if (error) *error = err;
+
+  if (err)
+    memset(value, 0, n); // set to zero (default)
+
+  else if (isAscii())
+  {
+    double val = strtod(&_buffer[_nextIndex], 0);
+    memcpy(value, &val, n);
+    _updateNextIndex();
+  }
+
+  else
+  {
+    memcpy(value, &_buffer[_nextIndex], n);
+    _nextIndex += n;
+  }
 }
 
 // Internal. SLIP reserved codes.
