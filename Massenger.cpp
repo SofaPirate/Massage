@@ -170,6 +170,10 @@ bool Massenger::_updateNextIndex()
   return (_nextIndex < _messageSize);
 }
 
+bool Massenger::_hasNext() const {
+  return (_nextIndex < _messageSize);
+}
+
 #define MASSENGER_SLIP_END     0xC0
 #define MASSENGER_SLIP_ESC     0xDB
 #define MASSENGER_SLIP_ESC_END 0xDC
