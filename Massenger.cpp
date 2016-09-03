@@ -175,31 +175,31 @@ bool Massenger::_updateNextIndex()
 #define MASSENGER_SLIP_ESC_END 0xDC
 #define MASSENGER_SLIP_ESC_ESC 0xDD
 
-bool Massenger::_process(int serialByte)
+bool Massenger::_process(int streamByte)
 {
   // ASCII mode. ///////////////////////////////////////////
-  if (mode == MASSENGER_ASCII)
+  if (_mode == MASSENGER_ASCII)
   {
     // Check if we've reached the end of the buffer.
-    if (bufferSize >= (MASSENGER_BUFFERSIZE-1))
+    if (_messageSize >= (MASSENGER__messageSize-1))
     {
-      bufferSize = MASSENGER_BUFFERSIZE-1;
+      _messageSize = MASSENGER__messageSize-1;
       _write(0);
       return true;
     }
 
     // Process byte.
-    switch (serialByte)
+    switch (streamByte)
     {
       case '\n': // LF
       case '\r': // CR
-        if (bufferSize > 0) // only process this if we are *not* at beginning
+        if (_messageSize > 0) // only process this if we are *not* at beginning
         {
-          if (buffer[bufferSize-1] != 0)
+          if (_buffer[_messageSize-1] != 0)
             _write(0);
 
-          // Position nextIndex after command address string.
-          nextIndex = 0;
+          // Position _nextIndex after command address string.
+          _nextIndex = 0;
           _updateNextIndex();
 
           return true;
@@ -207,13 +207,13 @@ bool Massenger::_process(int serialByte)
         break;
       case ' ':
         // Put null character instead of space to easily use atoi()/atof() functions.
-        if (bufferSize > 0 && buffer[bufferSize-1] != 0)
+        if (_messageSize > 0 && _buffer[_messageSize-1] != 0)
         {
           _write(0);
         }
         break;
       default: // caught a non-reserved character
-        _write(serialByte);
+        _write(streamByte);
     }
 
   }
@@ -223,20 +223,20 @@ bool Massenger::_process(int serialByte)
     byte value = 0;
 
     // Check if we've reached the end of the buffer.
-    if (bufferSize >= MASSENGER_BUFFERSIZE)
+    if (_messageSize >= MASSENGER__messageSize)
     {
-      bufferSize = MASSENGER_BUFFERSIZE;
+      _messageSize = MASSENGER__messageSize;
       return true;
     }
 
     // Process byte.
-    slipEscaping = false; // reset
-    switch (serialByte) {
+    _slipEscaping = false; // reset
+    switch (streamByte) {
       case MASSENGER_SLIP_END:
-        if (bufferSize > 0) // only process this if we are *not* at beginning
+        if (_messageSize > 0) // only process this if we are *not* at beginning
         {
-          // Position nextIndex after command address string.
-          nextIndex = 0;
+          // Position _nextIndex after command address string.
+          _nextIndex = 0;
           _updateNextIndex();
 
           return true;
@@ -244,18 +244,18 @@ bool Massenger::_process(int serialByte)
         break;
 
       case MASSENGER_SLIP_ESC:
-        slipEscaping = true;
+        _slipEscaping = true;
         break;
 
       case MASSENGER_SLIP_ESC_END:
-        _write(slipEscaping ? MASSENGER_SLIP_END : MASSENGER_SLIP_ESC_END);
+        _write(_slipEscaping ? MASSENGER_SLIP_END : MASSENGER_SLIP_ESC_END);
         break;
       case MASSENGER_SLIP_ESC_ESC:
-        _write(slipEscaping ? MASSENGER_SLIP_ESC : MASSENGER_SLIP_ESC_ESC);
+        _write(_slipEscaping ? MASSENGER_SLIP_ESC : MASSENGER_SLIP_ESC_ESC);
         break;
 
       default:
-        _write(serialByte);
+        _write(streamByte);
     }
   }
 
