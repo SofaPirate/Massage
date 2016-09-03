@@ -5,12 +5,12 @@ extern "C" {
 
 #include "Massenger.h"
 
-Massenger::Massenger(byte _mode, Stream* _serial)
+Massenger::Massenger(byte mode, Stream* stream)
 {
-	serial = _serial;
-  mode   = _mode;
+	_stream = stream;
+  _mode   = mode;
 
-  slipEscaping = false;
+  _slipEscaping = false;
 }
 
 bool Massenger::receive()
@@ -18,10 +18,10 @@ bool Massenger::receive()
   // Flush.
   flush();
 
-  // Read serial.
-  while (serial->available())
+  // Read stream.
+  while (_stream->available())
   {
-    if (_process(serial->read()))
+    if (_process(_stream->read()))
       return true;
   }
 
@@ -30,7 +30,7 @@ bool Massenger::receive()
 
 void Massenger::Massenger::Massenger::flush()
 {
-  nextIndex = bufferSize = 0;
+  _nextIndex = _messageSize = 0;
 }
 
 bool Massenger::dispatch(const char* address, callbackFunction callback)
@@ -50,7 +50,7 @@ int16_t Massenger::nextInt(bool* error)
   if (error) *error = err;
   if (err) return 0;
 
-  int16_t value = atoi(&buffer[nextIndex]);
+  int16_t value = atoi(&_buffer[_nextIndex]);
   _updateNextIndex();
   return value;
 }
@@ -63,7 +63,7 @@ int32_t Massenger::nextLong(bool* error)
 
   // TODO: reimplement using strtol() to catch errors
   // cf. http://stackoverflow.com/questions/8871711/atoi-how-to-identify-the-difference-between-zero-and-error
-  int16_t value = atol(&buffer[nextIndex]);
+  int16_t value = atol(&_buffer[_nextIndex]);
   _updateNextIndex();
   return value;
 }
@@ -78,14 +78,15 @@ double Massenger::nextDouble(bool* error)
   bool err = !_hasNext();
   if (error) *error = err;
   if (err) return 0;
-  double value = atof(&buffer[nextIndex]);
+
+  double value = atof(&_buffer[_nextIndex]);
   _updateNextIndex();
   return value;
 }
 
 void Massenger::sendBegin(const char* address)
 {
-  serial->print(address);
+  _stream->print(address);
 }
 
 void Massenger::sendByte(uint8_t value)
@@ -100,8 +101,8 @@ void Massenger::sendInt(int16_t value)
 
 void Massenger::sendLong(int32_t value)
 {
-  serial->write(' ');
-  serial->print(value);
+  _stream->write(' ');
+  _stream->print(value);
 }
 
 void Massenger::sendFloat(float value)
@@ -111,13 +112,13 @@ void Massenger::sendFloat(float value)
 
 void Massenger::sendDouble(double value)
 {
-  serial->write(' ');
-  serial->print(value);
+  _stream->write(' ');
+  _stream->print(value);
 }
 
 void Massenger::sendEnd()
 {
-  serial->write('\n');
+  _stream->write('\n');
 }
 
 void Massenger::send(const char *address)
@@ -163,10 +164,10 @@ void Massenger::sendDouble(const char *address, double value)
 
 bool Massenger::_updateNextIndex()
 {
-  while (buffer[nextIndex] != 0)
-    nextIndex++;
-  nextIndex++;
-  return (nextIndex < bufferSize);
+  while (_buffer[_nextIndex] != 0)
+    _nextIndex++;
+  _nextIndex++;
+  return (_nextIndex < _messageSize);
 }
 
 #define MASSENGER_SLIP_END     0xC0
@@ -263,9 +264,9 @@ bool Massenger::_process(int serialByte)
 
 bool Massenger::_write(uint8_t value)
 {
-  if (bufferSize >= MASSENGER_BUFFERSIZE)
+  if (_messageSize >= MASSENGER__messageSize)
     return false;
-  buffer[bufferSize++] = value;
+  _buffer[_messageSize++] = value;
 }
 
 void Massenger::_sendSlipData(const uint8_t* data, size_t n)
@@ -276,15 +277,15 @@ void Massenger::_sendSlipData(const uint8_t* data, size_t n)
     switch (value)
     {
       case MASSENGER_SLIP_END:
-        serial->write(MASSENGER_SLIP_ESC);
-        serial->write(MASSENGER_SLIP_ESC_END);
+        _stream->write(MASSENGER_SLIP_ESC);
+        _stream->write(MASSENGER_SLIP_ESC_END);
         break;
       case MASSENGER_SLIP_ESC:
-        serial->write(MASSENGER_SLIP_ESC);
-        serial->write(MASSENGER_SLIP_ESC_ESC);
+        _stream->write(MASSENGER_SLIP_ESC);
+        _stream->write(MASSENGER_SLIP_ESC_ESC);
         break;
       default:
-        serial->write(value);
+        _stream->write(value);
     }
   }
 }

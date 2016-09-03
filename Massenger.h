@@ -19,7 +19,7 @@ class Massenger
 
 public:
   // Constructor.
-  Massenger(byte mode=MASSENGER_AUTO, Stream* serial=&Serial);
+  Massenger(byte mode=MASSENGER_AUTO, Stream* stream=&Serial);
 
   /**
    * Flushes previous message and reads serial port. Returns true if new
@@ -104,22 +104,22 @@ private:
   void _sendSlipData(const uint8_t* data, size_t n);
 
   // Pointer to the stream read by this object.
-  Stream* serial;
+  Stream* _stream;
 
   // Messenging mode (ASCII, BINARY/SLIP, AUTO).
-  byte mode;
+  byte _mode;
 
   // SLIP decoding state: currently escaping.
-  bool slipEscaping;
+  bool _slipEscaping;
 
   // Size of buffer.
-  uint8_t bufferSize;
+  uint8_t _bufferSize;
 
   // Index in the buffer of next argument to read.
-  uint8_t nextIndex;
+  uint8_t _nextIndex;
 
   // Buffer that holds the data for current message.
-  char buffer[MASSENGER_BUFFERSIZE];
+  char _buffer[MASSENGER_BUFFERSIZE];
 };
 
 #endif
