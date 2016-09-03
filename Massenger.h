@@ -106,6 +106,12 @@ public:
   /// Changes the mode. Notice: this might flush the current message buffer.
   void setMode(uint8_t mode);
 
+  /// Returns true iff we are in ASCII mode.
+  bool isAscii() const { return _mode == MASSENGER_ASCII; }
+
+  /// Returns true iff we are in binary/SLIP mode.
+  bool isBinary() const { return _mode == MASSENGER_BINARY; }
+
 private:
   // Moves nextIndex to the next token.
   bool _updateNextIndex();
