@@ -117,6 +117,17 @@ void Massenger::sendDouble(double value)
   _stream->print(value);
 }
 
+void Massenger::setMode(uint8_t mode)
+{
+  // Check if mode is changed or valid.
+  if (mode != _mode && mode <= MASSENGER_AUTO)
+  {
+    // Set mode and reset buffer.
+    _mode = mode;
+    flush();
+  }
+}
+
 void Massenger::sendEnd()
 {
   _stream->write('\n');

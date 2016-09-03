@@ -103,6 +103,9 @@ public:
   /// Returns current mode.
   uint8_t mode() { return _mode; }
 
+  /// Changes the mode. Notice: this might flush the current message buffer.
+  void setMode(uint8_t mode);
+
 private:
   // Moves nextIndex to the next token.
   bool _updateNextIndex();
