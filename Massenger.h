@@ -87,6 +87,9 @@ public:
   /// Sends message with single double value.
   void sendDouble(const char *address, double value);
 
+  /// Returns current mode.
+  uint8_t mode() { return _mode; }
+
 private:
   // Moves nextIndex to the next token.
   bool _updateNextIndex();
