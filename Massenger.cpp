@@ -35,7 +35,7 @@ void Massenger::Massenger::Massenger::flush()
 
 bool Massenger::dispatch(const char* address, callbackFunction callback)
 {
-  bool matches = (strcmp(buffer, address) == 0);
+  bool matches = (strcmp(_buffer, address) == 0);
   if (matches) callback();
   return matches;
 }
