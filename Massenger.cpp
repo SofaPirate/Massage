@@ -181,9 +181,9 @@ bool Massenger::_process(int streamByte)
   if (_mode == MASSENGER_ASCII)
   {
     // Check if we've reached the end of the buffer.
-    if (_messageSize >= (MASSENGER__messageSize-1))
+    if (_messageSize >= (MASSENGER_BUFFERSIZE-1))
     {
-      _messageSize = MASSENGER__messageSize-1;
+      _messageSize = MASSENGER_BUFFERSIZE-1;
       _write(0);
       return true;
     }
@@ -223,9 +223,9 @@ bool Massenger::_process(int streamByte)
     byte value = 0;
 
     // Check if we've reached the end of the buffer.
-    if (_messageSize >= MASSENGER__messageSize)
+    if (_messageSize >= MASSENGER_BUFFERSIZE)
     {
-      _messageSize = MASSENGER__messageSize;
+      _messageSize = MASSENGER_BUFFERSIZE;
       return true;
     }
 
@@ -264,7 +264,7 @@ bool Massenger::_process(int streamByte)
 
 bool Massenger::_write(uint8_t value)
 {
-  if (_messageSize >= MASSENGER__messageSize)
+  if (_messageSize >= MASSENGER_BUFFERSIZE)
     return false;
   _buffer[_messageSize++] = value;
 }
