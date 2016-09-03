@@ -94,13 +94,13 @@ private:
   // Returns true iff it is still possible to call next*().
   bool _hasNext() const;
 
-  // Process a single value read from the serial stream.
+  // Processes a single value read from the serial stream.
   bool _process(int serialByte);
 
-  // Write value to buffer (returns false if buffer is full and cannot be written to).
+  // Writes single byte to buffer (returns false if buffer is full and cannot be written to).
   bool _write(uint8_t value);
 
-  // Send *n* bytes of *data* to serial using SLIP.
+  // Sends *n* bytes of *data* to serial using SLIP.
   void _sendSlipData(const uint8_t* data, size_t n);
 
   // Pointer to the stream read by this object.
