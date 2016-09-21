@@ -24,14 +24,16 @@
 #define MASSENGER_BUFFERSIZE 128
 #endif
 
+
+
 /// Main Massenger class.
-class Massenger
+ class _Massenger
 {
   typedef void (*callbackFunction)(void);
 
 public:
   /// Constructor.
-  Massenger(byte mode=MASSENGER_AUTO, Stream* stream=&Serial);
+  _Massenger(byte mode=MASSENGER_AUTO, Stream* stream=&Serial);
 
   /**
    * Flushes previous message and reads serial port. Returns true if new
@@ -150,6 +152,14 @@ private:
 
   // Buffer that holds the data for current message.
   char _buffer[MASSENGER_BUFFERSIZE];
+};
+
+
+
+/// AsciiMassenger class.
+ class AsciiMassenger : public  _Massenger 
+{
+   
 };
 
 #endif
