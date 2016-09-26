@@ -5,7 +5,7 @@ extern "C" {
 
 #include "Massenger.h"
 
-Massenger::Massenger(byte mode, Stream* stream)
+AsciiMassenger::AsciiMassenger(byte mode, Stream* stream)
 {
 	_stream = stream;
   _mode   = mode;
@@ -13,7 +13,7 @@ Massenger::Massenger(byte mode, Stream* stream)
   _slipEscaping = false;
 }
 
-bool Massenger::receive()
+bool AsciiMassenger::receive()
 {
   // Flush.
   flush();
@@ -28,86 +28,86 @@ bool Massenger::receive()
   return false;
 }
 
-void Massenger::Massenger::Massenger::flush()
+void AsciiMassenger::flush()
 {
   _nextIndex = _messageSize = 0;
   _slipEscaping = false;
 }
 
-bool Massenger::dispatch(const char* address, callbackFunction callback)
+bool AsciiMassenger::dispatch(const char* address, callbackFunction callback)
 {
   bool matches = (strcmp(_buffer, address) == 0);
   if (matches) callback();
   return matches;
 }
 
-int8_t Massenger::nextByte(bool* error) {
+int8_t AsciiMassenger::nextByte(bool* error) {
   int8_t v;
   _nextInteger((uint8_t*)&v, sizeof(int8_t), error);
   return v;
 }
 
-int16_t Massenger::nextInt(bool* error)
+int16_t AsciiMassenger::nextInt(bool* error)
 {
   int16_t v;
   _nextInteger((uint8_t*)&v, sizeof(int16_t), error);
   return v;
 }
 
-int32_t Massenger::nextLong(bool* error)
+int32_t AsciiMassenger::nextLong(bool* error)
 {
   int32_t v;
   _nextInteger((uint8_t*)&v, sizeof(int32_t), error);
   return v;
 }
 
-float Massenger::nextFloat(bool* error)
+float AsciiMassenger::nextFloat(bool* error)
 {
   float v;
   _nextReal((uint8_t*)&v, sizeof(float), error);
   return v;
 }
 
-double Massenger::nextDouble(bool* error)
+double AsciiMassenger::nextDouble(bool* error)
 {
   double v;
   _nextReal((uint8_t*)&v, sizeof(double), error);
   return v;
 }
 
-void Massenger::sendBegin(const char* address)
+void AsciiMassenger::sendBegin(const char* address)
 {
   _stream->print(address);
 }
 
-void Massenger::sendByte(uint8_t value)
+void AsciiMassenger::sendByte(uint8_t value)
 {
   sendLong(value);
 }
 
-void Massenger::sendInt(int16_t value)
+void AsciiMassenger::sendInt(int16_t value)
 {
   sendLong(value);
 }
 
-void Massenger::sendLong(int32_t value)
+void AsciiMassenger::sendLong(int32_t value)
 {
   _stream->write(' ');
   _stream->print(value);
 }
 
-void Massenger::sendFloat(float value)
+void AsciiMassenger::sendFloat(float value)
 {
   sendDouble(value);
 }
 
-void Massenger::sendDouble(double value)
+void AsciiMassenger::sendDouble(double value)
 {
   _stream->write(' ');
   _stream->print(value);
 }
 
-void Massenger::setMode(uint8_t mode)
+void AsciiMassenger::setMode(uint8_t mode)
 {
   // Check if mode is changed or valid.
   if (mode != _mode && mode <= MASSENGER_AUTO)
@@ -118,53 +118,53 @@ void Massenger::setMode(uint8_t mode)
   }
 }
 
-void Massenger::sendEnd()
+void AsciiMassenger::sendEnd()
 {
   _stream->write('\n');
 }
 
-void Massenger::send(const char *address)
+void AsciiMassenger::send(const char *address)
 {
   sendBegin(address);
   sendEnd();
 }
 
-void Massenger::sendByte(const char *address, uint8_t value)
+void AsciiMassenger::sendByte(const char *address, uint8_t value)
 {
   sendBegin(address);
   sendByte(value);
   sendEnd();
 }
 
-void Massenger::sendInt(const char *address, int16_t value)
+void AsciiMassenger::sendInt(const char *address, int16_t value)
 {
   sendBegin(address);
   sendInt(value);
   sendEnd();
 }
 
-void Massenger::sendLong(const char *address, int32_t value)
+void AsciiMassenger::sendLong(const char *address, int32_t value)
 {
   sendBegin(address);
   sendLong(value);
   sendEnd();
 }
 
-void Massenger::sendFloat(const char *address, float value)
+void AsciiMassenger::sendFloat(const char *address, float value)
 {
   sendBegin(address);
   sendFloat(value);
   sendEnd();
 }
 
-void Massenger::sendDouble(const char *address, double value)
+void AsciiMassenger::sendDouble(const char *address, double value)
 {
   sendBegin(address);
   sendDouble(value);
   sendEnd();
 }
 
-bool Massenger::_updateNextIndex()
+bool AsciiMassenger::_updateNextIndex()
 {
   while (_buffer[_nextIndex] != 0)
     _nextIndex++;
@@ -172,11 +172,11 @@ bool Massenger::_updateNextIndex()
   return (_nextIndex < _messageSize);
 }
 
-bool Massenger::_hasNext() const {
+bool AsciiMassenger::_hasNext() const {
   return (_nextIndex < _messageSize);
 }
 
-void Massenger::_nextInteger(uint8_t* number, size_t n, bool* error)
+void AsciiMassenger::_nextInteger(uint8_t* number, size_t n, bool* error)
 {
   bool err = !_hasNext();
   if (error) *error = err;
@@ -198,7 +198,7 @@ void Massenger::_nextInteger(uint8_t* number, size_t n, bool* error)
   }
 }
 
-void Massenger::_nextReal(uint8_t* value, size_t n, bool* error)
+void AsciiMassenger::_nextReal(uint8_t* value, size_t n, bool* error)
 {
   bool err = !_hasNext();
   if (error) *error = err;
@@ -226,7 +226,7 @@ void Massenger::_nextReal(uint8_t* value, size_t n, bool* error)
 #define MASSENGER_SLIP_ESC_END 0xDC
 #define MASSENGER_SLIP_ESC_ESC 0xDD
 
-bool Massenger::_process(int streamByte)
+bool AsciiMassenger::_process(int streamByte)
 {
   // ASCII mode. ///////////////////////////////////////////
   if (_mode == MASSENGER_ASCII)
@@ -313,14 +313,14 @@ bool Massenger::_process(int streamByte)
   return false;
 }
 
-bool Massenger::_write(uint8_t value)
+bool AsciiMassenger::_write(uint8_t value)
 {
   if (_messageSize >= MASSENGER_BUFFERSIZE)
     return false;
   _buffer[_messageSize++] = value;
 }
 
-void Massenger::_sendSlipData(const uint8_t* data, size_t n)
+void AsciiMassenger::_sendSlipData(const uint8_t* data, size_t n)
 {
   while (n--)
   {
