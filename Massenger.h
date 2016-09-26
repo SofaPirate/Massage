@@ -27,13 +27,13 @@
 
 
 /// Main Massenger class.
- class _Massenger
+ class AsciiMassenger
 {
   typedef void (*callbackFunction)(void);
 
 public:
   /// Constructor.
-  _Massenger(byte mode=MASSENGER_AUTO, Stream* stream=&Serial);
+  AsciiMassenger(byte mode=MASSENGER_AUTO, Stream* stream=&Serial);
 
   /**
    * Flushes previous message and reads serial port. Returns true if new
@@ -156,10 +156,5 @@ private:
 
 
 
-/// AsciiMassenger class.
- class AsciiMassenger : public  _Massenger 
-{
-   
-};
 
 #endif

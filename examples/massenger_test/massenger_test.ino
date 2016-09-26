@@ -3,7 +3,7 @@
 
 // Instantiate a Massenger object,
 // link it to Serial
-_Massenger msg;  // same as Massenger msg =  Massenger(&Serial, MASSENGER_AUTO);
+AsciiMassenger msg;  // same as Massenger msg =  Massenger(&Serial, MASSENGER_AUTO);
 
 void setup() {
 
