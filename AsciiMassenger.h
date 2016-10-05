@@ -59,14 +59,6 @@ public:
   /// Ends the sending of a message.
   virtual void sendEnd();
 
-  void debug() {
-    Serial << "MASSENGER CONTENT ====" << endl;
-    Serial << "length: " << _messageSize << endl
-           << "next:   " << _nextIndex << endl;
-    for (int i=0; i<MASSENGER_BUFFERSIZE; i++)
-      Serial << (int)_buffer[i] << ":" << (char)_buffer[i] << " ";
-    Serial.println();
-  }
 protected:
   /// Processes a single value read from the serial stream.
   virtual bool _process(int serialByte);

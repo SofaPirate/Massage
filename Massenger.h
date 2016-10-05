@@ -1,8 +1,6 @@
 #ifndef Massenger_h
 #define Massenger_h
 
-#include <Streaming.h>
-
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Arduino.h"
 #else
