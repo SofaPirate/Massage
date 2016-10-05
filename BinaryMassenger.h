@@ -33,39 +33,32 @@ public:
 
   /// Sends a byte.
   virtual void sendByte(uint8_t value);
+  virtual void sendByte(const char *address, uint8_t value)
+  { Massenger::sendByte(address, value); }
 
   /// Sends an int.
   virtual void sendInt(int16_t value);
+  virtual void sendInt(const char *address, int16_t value)
+  { Massenger::sendInt(address, value); }
 
   /// Sends a long.
   virtual void sendLong(int32_t value);
+  virtual void sendLong(const char *address, int32_t value)
+  { Massenger::sendLong(address, value); }
 
   /// Sends a float.
   virtual void sendFloat(float value);
+  virtual void sendFloat(const char *address, float value)
+  { Massenger::sendFloat(address, value); }
 
   /// Sends a double.
   virtual void sendDouble(double value);
+  virtual void sendDouble(const char *address, double value)
+  { Massenger::sendDouble(address, value); }
 
   /// Ends the sending of a message.
   virtual void sendEnd();
 
-  /// Sends message with no arguments.
-  virtual void send(const char *address);
-
-  /// Sends message with single byte value.
-  virtual void sendByte(const char *address, uint8_t value);
-
-  /// Sends message with single int value.
-  virtual void sendInt(const char *address, int16_t value);
-
-  /// Sends message with single long value.
-  virtual void sendLong(const char *address, int32_t value);
-
-  /// Sends message with single float value.
-  virtual void sendFloat(const char *address, float value);
-
-  /// Sends message with single double value.
-  virtual void sendDouble(const char *address, double value);
 
 protected:
   /// Processes a single value read from the serial stream.
