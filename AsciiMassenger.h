@@ -59,10 +59,6 @@ public:
   /// Ends the sending of a message.
   virtual void sendEnd();
 
-  /// Sends message with no arguments.
-  virtual void send(const char *address);
-
-
   void debug() {
     Serial << "MASSENGER CONTENT ====" << endl;
     Serial << "length: " << _messageSize << endl

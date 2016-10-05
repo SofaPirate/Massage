@@ -91,13 +91,6 @@ void AsciiMassenger::sendEnd()
   _stream->write('\n');
 }
 
-void AsciiMassenger::send(const char *address)
-{
-  sendBegin(address);
-  sendEnd();
-}
-
-
 bool AsciiMassenger::_process(int streamByte)
 {
   // Check if we've reached the end of the buffer.
