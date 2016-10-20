@@ -86,23 +86,8 @@ public:
   virtual void sendFloat(const char *address, float value);
 
 protected:
-  /// Processes a single value read from the serial stream.
-  virtual bool _process(int serialByte) = 0;
-
-  // Writes single byte to buffer (returns false if buffer is full and cannot be written to).
-  bool _write(uint8_t value);
-
   // Pointer to the stream read by this object.
   Stream* _stream;
-
-  // Current size of message in buffer.
-  uint8_t _messageSize;
-
-  // Index in the buffer of next argument to read.
-  //uint8_t _nextIndex;
-
-  // Buffer that holds the data for current message.
-  char _buffer[MASSENGER_BUFFERSIZE];
 };
 
 
