@@ -71,19 +71,43 @@ public:
   virtual void sendEnd() = 0;
 
   /// Sends message with no arguments.
-  virtual void send(const char *address);
+  virtual void sendMessage(const char *address)
+  {
+    sendBegin(address);
+    sendEnd();
+  }
 
   /// Sends message with single byte value.
-  virtual void sendByte(const char *address, uint8_t value);
+  virtual void sendMessageByte(const char *address, uint8_t value)
+  {
+    sendBegin(address);
+    sendByte(value);
+    sendEnd();
+  }
 
   /// Sends message with single int value.
-  virtual void sendInt(const char *address, int16_t value);
+  virtual void sendMessageInt(const char *address, int16_t value)
+  {
+    sendBegin(address);
+    sendInt(value);
+    sendEnd();
+  }
 
   /// Sends message with single long value.
-  virtual void sendLong(const char *address, int32_t value);
+  virtual void sendMessageLong(const char *address, int32_t value)
+  {
+    sendBegin(address);
+    sendLong(value);
+    sendEnd();
+  }
 
   /// Sends message with single float value.
-  virtual void sendFloat(const char *address, float value);
+  virtual void sendMessageFloat(const char *address, float value)
+  {
+    sendBegin(address);
+    sendFloat(value);
+    sendEnd();
+  }
 
 protected:
   // Pointer to the stream read by this object.
