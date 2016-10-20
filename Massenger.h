@@ -23,7 +23,7 @@ public:
   typedef void (*callbackFunction)(void);
 
   /// Constructor.
-  MassengerMassenger(Stream* stream) : _stream(stream) {}
+  Massenger(Stream* stream) : _stream(stream) {}
 
   // Virtual destructor.
   virtual ~Massenger() {}
