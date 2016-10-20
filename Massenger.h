@@ -52,9 +52,6 @@ public:
   /// Reads next float.
   virtual float nextFloat(bool* error=0) = 0;
 
-  /// Reads next double.
-  virtual double nextDouble(bool* error=0) = 0;
-
   /// Begins the sending of a message.
   virtual void sendBegin(const char* address) = 0;
 
@@ -69,9 +66,6 @@ public:
 
   /// Sends a float.
   virtual void sendFloat(float value) = 0;
-
-  /// Sends a double.
-  virtual void sendDouble(double value) = 0;
 
   /// Ends the sending of a message.
   virtual void sendEnd() = 0;
@@ -90,9 +84,6 @@ public:
 
   /// Sends message with single float value.
   virtual void sendFloat(const char *address, float value);
-
-  /// Sends message with single double value.
-  virtual void sendDouble(const char *address, double value);
 
 protected:
   /// Processes a single value read from the serial stream.
