@@ -23,7 +23,7 @@ public:
   typedef void (*callbackFunction)(void);
 
   /// Constructor.
-  Massenger(Stream* stream=&Serial);
+  MassengerMassenger(Stream* stream) : _stream(stream) {}
 
   // Virtual destructor.
   virtual ~Massenger() {}
@@ -32,13 +32,13 @@ public:
    * Flushes previous message and reads serial port. Returns true if new
    * message has arrived.
    */
-  virtual bool receive();
+  virtual bool receive() = 0;
 
   /// Flushes current message in buffer (if any).
-  virtual void flush();
+  virtual void flush() = 0;
 
   /// If current message matches "address", calls function "callback" and returns true.
-  virtual bool dispatch(const char* address, callbackFunction callback);
+  virtual bool dispatch(const char* address, callbackFunction callback) = 0;
 
   /// Reads next byte.
   virtual int8_t nextByte(bool* error=0) = 0;
