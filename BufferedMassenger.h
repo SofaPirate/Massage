@@ -28,6 +28,8 @@ public:
     // Read stream.
     while (_stream->available())
     {
+      // Process single byte.
+      // NOTE: If _process() returns true it means that a new message is available.
       if (_process(_stream->read()))
       {
         _needsToFlush = true;
@@ -44,6 +46,7 @@ public:
     _messageSize = 0;
   }
 
+  /// If current message matches "address", calls function "callback" and returns true.
   virtual bool dispatch(const char* address, callbackFunction callback)
   {
     // Verity if address matches beginning of buffer.
@@ -53,7 +56,10 @@ public:
   }
 
 protected:
-  /// Processes a single value read from the serial stream.
+  /**
+   * Processes a single value read from the serial stream. Returns true iff a new message
+   * is available.
+   */
   virtual bool _process(int serialByte) = 0;
 
   // Writes single byte to buffer (returns false if buffer is full and cannot be written to).
