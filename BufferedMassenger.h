@@ -7,7 +7,10 @@ class BufferedMassenger : public Massenger
 {
 public:
   /// Constructor.
-  BufferedMassenger(Stream* stream=&Serial) : Massenger(stream), _messageSize(0) {}
+  BufferedMassenger(Stream* stream=&Serial)
+    : Massenger(stream),
+    _messageSize(0),
+    _needsToFlush(false) {}
 
   // Virtual destructor.
   virtual ~BufferedMassenger() {}
@@ -18,11 +21,18 @@ public:
    */
   virtual bool receive()
   {
+    // Flush (if needed).
+    if ( _needsToFlush)
+      flush();
+
     // Read stream.
     while (_stream->available())
     {
       if (_process(_stream->read()))
+      {
+        _needsToFlush = true;
         return true;
+      }
     }
 
     return false;
@@ -30,6 +40,7 @@ public:
 
   /// Flushes current message in buffer (if any).
   virtual void flush() {
+  	_needsToFlush = false;
     _messageSize = 0;
   }
 
@@ -63,6 +74,9 @@ protected:
 
   // Buffer that holds the data for current message.
   char _buffer[MASSENGER_BUFFERSIZE];
+
+  // Keeps track of whether we need to flush on the next call to receive().
+  bool _needsToFlush;
 };
 
 #endif
