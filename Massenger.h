@@ -34,10 +34,13 @@ public:
    */
   virtual bool receive() = 0;
 
-
-  /// If current message matches "address", calls function "callback" and returns true.
+  /**
+   * If current message matches "address", calls function "callback"
+   * and returns true.
+   */
   virtual bool dispatch(const char* address, callbackFunction callback) = 0;
 
+  // Reading methods ///////////////////////////////////////////////
 
   /// Reads next byte.
   virtual uint8_t nextByte(bool* error=0) = 0;
@@ -50,6 +53,8 @@ public:
 
   /// Reads next float.
   virtual float nextFloat(bool* error=0) = 0;
+
+  // Writing methods ///////////////////////////////////////////////
 
   /// Begins the sending of a message.
   virtual void sendBegin(const char* address) = 0;
