@@ -14,11 +14,13 @@ Massenger	KEYWORD1
 
 receive	KEYWORD2
 dispatch	KEYWORD2
+nextBoolean	KEYWORD2
 nextByte	KEYWORD2
 nextInt	KEYWORD2
 nextLong	KEYWORD2
 nextFloat	KEYWORD2
 sendBegin	KEYWORD2
+sendBoolean	KEYWORD2
 sendByte	KEYWORD2
 sendInt	KEYWORD2
 sendLong	KEYWORD2

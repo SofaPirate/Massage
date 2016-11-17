@@ -38,6 +38,8 @@ public:
   /// If current message matches "address", calls function "callback" and returns true.
   virtual bool dispatch(const char* address, callbackFunction callback) = 0;
 
+  /// Reads next boolean.
+  virtual bool nextBoolean(bool* error=0) { return (bool)nextByte(error); }
 
   /// Reads next byte.
   virtual uint8_t nextByte(bool* error=0) = 0;
@@ -54,6 +56,9 @@ public:
   /// Begins the sending of a message.
   virtual void sendBegin(const char* address) = 0;
 
+  /// Sends a boolean.
+  virtual void sendBoolean(bool value) { sendByte(value); }
+
   /// Sends a byte.
   virtual void sendByte(uint8_t value) = 0;
 
@@ -66,6 +71,7 @@ public:
   /// Sends a float.
   virtual void sendFloat(float value) = 0;
 
+
   /// Ends the sending of a message.
   virtual void sendEnd() = 0;
 
@@ -73,6 +79,14 @@ public:
   virtual void sendMessage(const char *address)
   {
     sendBegin(address);
+    sendEnd();
+  }
+
+  /// Sends message with single boolean value.
+  virtual void sendMessageBoolean(const char *address, bool value)
+  {
+    sendBegin(address);
+    sendBoolean(value);
     sendEnd();
   }
 
