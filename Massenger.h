@@ -38,8 +38,9 @@ public:
   /// If current message matches "address", calls function "callback" and returns true.
   virtual bool dispatch(const char* address, callbackFunction callback) = 0;
 
+
   /// Reads next byte.
-  virtual int8_t nextByte(bool* error=0) = 0;
+  virtual uint8_t nextByte(bool* error=0) = 0;
 
   /// Reads next int.
   virtual int16_t nextInt(bool* error=0) = 0;
