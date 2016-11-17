@@ -7,6 +7,8 @@
 #include "WProgram.h"
 #endif
 
+#include <limits.h>
+
 #ifndef MASSENGER_BUFFERSIZE
 /**
  * Max. size of message buffer. Can be predefined before including Massenger.h
@@ -108,7 +110,83 @@ public:
     sendEnd();
   }
 
+  // Advanced features (optional).
+
+  /**
+   * Sends an integer value within range [0, maxValue]. Needs to be
+   * read using nextInteger(maxValue). Subclasses can override protected
+   * function _sendInteger() to compress information in a more efficient way.
+   */
+  virtual void sendInteger(int32_t value, int32_t maxValue) {
+    sendInteger(value, 0, maxValue);
+  }
+  virtual void sendInteger(int16_t value, int16_t maxValue) {
+    sendInteger((int32_t)value, (int32_t)0, (int32_t)maxValue);
+  }
+  virtual void sendInteger(uint8_t value, uint8_t maxValue) {
+    sendInteger((int32_t)value, (int32_t)0, (int32_t)maxValue);
+  }
+
+  /**
+   * Sends an integer value within range [minValue, maxValue]. Needs to be
+   * read using nextInteger(minValue, maxValue). Subclasses can override protected
+   * function _sendInteger() to compress information in a more efficient way.
+   */
+  virtual void sendInteger(int32_t value, int32_t minValue, int32_t maxValue) {
+    maxValue = max(minValue, maxValue); // make sure minValue <= maxValue
+    _sendInteger(contrain(value, minValue, maxValue), minValue, maxValue);
+  }
+  virtual void sendInteger(int16_t value, int16_t minValue, int16_t maxValue) {
+    sendInteger((int32_t)value, (int32_t)minValue, (int32_t)maxValue);
+  }
+  virtual void sendInteger(uint8_t value, uint8_t minValue, uint8_t maxValue) {
+    sendInteger((int32_t)value, (int32_t)minValue, (int32_t)maxValue);
+  }
+
+  /// Reads an integer within the range [0, maxValue].
+  virtual int32_t nextInteger(int32_t maxValue) {
+    return nextInteger(0, maxValue);
+  }
+  virtual int16_t nextInteger(int16_t maxValue) {
+    return nextInteger(0, maxValue);
+  }
+  virtual uint8_t nextInteger(uint8_t maxValue) {
+    return nextInteger(0, maxValue);
+  }
+
+  /// Reads an integer within the range [minValue, maxValue].
+  virtual int32_t nextInteger(int32_t minValue, int32_t maxValue) {
+    return _nextInteger(minValue, max(minValue, maxValue));
+  }
+  virtual int16_t nextInteger(int16_t minValue, int16_t maxValue) {
+    return (int16_t)nextInteger((uint32_t)minValue, (uint32_t)maxValue);
+  }
+  virtual uint8_t nextInteger(int32_t minValue, int32_t maxValue) {
+    return (uint8_t)nextInteger((uint8_t)minValue, (uint8_t)maxValue);
+  }
+
 protected:
+
+  // Override to compress in a more efficient way.
+  virtual void _sendInteger(int32_t value, int32_t minValue, int32_t maxValue) {
+    if (0 <= minValue && maxValue <= UCHAR_MAX)
+      sendByte((byte)value);
+    else if (INT_MIN <= minValue && maxValue <= INT_MAX)
+      sendInt(value);
+    else
+      sendLong(value);
+  }
+
+  // Override to compress in a more efficient way.
+  virtual int32_t _nextInteger(int32_t minValue, int32_t maxValue, bool* error=0) {
+    if (0 <= minValue && maxValue <= UCHAR_MAX)
+      return nextByte(error);
+    else if (INT_MIN <= minValue && maxValue <= INT_MAX)
+      return nextInt(error);
+    else
+      return nextLong(error);
+  }
+
   // Pointer to the stream read by this object.
   Stream* _stream;
 };
