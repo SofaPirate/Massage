@@ -16,14 +16,12 @@ Massenger	KEYWORD1
 #######################################
 
 parsePacket	KEYWORD2
-match	KEYWORD2
 dispatch	KEYWORD2
 fullmatch	KEYWORD2
 nextByte	KEYWORD2
 nextInt	KEYWORD2
 nextLong	KEYWORD2
 nextFloat	KEYWORD2
-nextDouble	KEYWORD2
 beginPacket	KEYWORD2
 addByte	KEYWORD2
 addInt	KEYWORD2
@@ -34,6 +32,7 @@ endPacket	KEYWORD2
 
 
 
+
 #######################################
 # Instances (KEYWORD2)
 #######################################
@@ -41,4 +40,3 @@ endPacket	KEYWORD2
 #######################################
 # Constants (LITERAL1)
 #######################################
-
