@@ -1,8 +1,6 @@
 Massenger
 =================
 
-Simple message API for Arduino and friends
+Simple serial message protocol for Arduino and friends
 
-Current implementations:
-* AsciiMassenger : https://github.com/SofaPirate/AsciiMassenger
-* BinaryMassenger : https://github.com/SofaPirate/BinaryMassenger
+http://wiki.t-o-f.info/Massenger/
