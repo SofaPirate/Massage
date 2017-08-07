@@ -51,7 +51,7 @@ MassagePacker
 
 `addFloat(float value)` : Adds a float.
 
-`endPacket()` : Ends the sending of a message.
+`endPacket()` : Ends a packet.
 
 `packEmpty(const char *address)` : Create a packet with no arguments.
   
