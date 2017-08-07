@@ -4,6 +4,7 @@ Massage
 *Massage* is a microcontroller message packer and parser for different types of formats and protocols. 
 
 A *massage* message always starts with an address string and is followed by a user defined number of bytes, ints, floats or longs. 
+The address string is used to route the message as in OSC.
 
 This repository is the API. It is implemented through different packing formats that follow the same interface:
 * AsciiMassage for ASCII messages: https://github.com/SofaPirate/AsciiMassage
