@@ -23,8 +23,7 @@ MassageParser
  
 `parse (int data, callbackFunction callback)` : Reads one element of serial port, flushing previous message if needed. Returns true iff new message has arrived. Optional callback function will be called if new message has arrived. 
  
-`fullMatch (const char *address)` : Return true if current message matches "address"
- 	Return true if current message matches "address".
+`fullMatch (const char *address)` : Return true if current message matches "address".
  
 `dispatch (const char *address, callbackFunction callback)` : If current message matches "address", calls function "callback" and returns true.
  
