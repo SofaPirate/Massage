@@ -63,7 +63,7 @@ public:
     return _buffer;
   }
 
-  /// Begins the sending of a message.
+  /// Begins a packet (erasing any previous packet).
   virtual void beginPacket(const char* address) = 0;
 
   /// Adds a byte.
@@ -78,7 +78,7 @@ public:
   /// Adds a float.
   virtual void addFloat(float value) = 0;
 
-  /// Ends the sending of a message.
+  /// Ends a packet.
   virtual void endPacket() = 0;
 
   /// Create a packet with no arguments.
