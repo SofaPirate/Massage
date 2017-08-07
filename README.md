@@ -12,7 +12,7 @@ There are two basic *massage* objetcs to work with *massages*:
 
 This repository (https://github.com/SofaPirate/Massage) is the API. It is implemented through different packing formats that follow the same interface:
 * AsciiMassage for easy to read ASCII messages: https://github.com/SofaPirate/AsciiMassage
-* SlipMassage for sendin lots of data with SLIP messages: https://github.com/SofaPirate/SlipMassage
+* SlipMassage for sending lots of data with SLIP messages: https://github.com/SofaPirate/SlipMassage
 
 These packing formats can then be used to send and receive messages over Serial, UDP or Websockets.
 
