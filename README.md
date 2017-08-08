@@ -9,9 +9,9 @@ There are two basic *massage* objetcs to work with *massages*:
 * *MassagePacker* packs data to be sent
 * *MassageParser* parses received data
 
-This repository (https://github.com/SofaPirate/Massage) is the API. It is implemented through different packing formats that follow the same interface:
-* AsciiMassage for easy-to-read ASCII messages: https://github.com/SofaPirate/AsciiMassage
-* SlipMassage for sending lots binary data using [SLIP encoding](https://en.wikipedia.org/wiki/Serial_Line_Internet_Protocol): https://github.com/SofaPirate/SlipMassage
+[This repository](https://github.com/SofaPirate/Massage) is the API. It is implemented through different packing formats that follow the same interface:
+* [AsciiMassage](https://github.com/SofaPirate/AsciiMassage) for easy-to-read ASCII messages: 
+* [SlipMassage](https://github.com/SofaPirate/SlipMassage) for sending lots binary data using [SLIP encoding](https://en.wikipedia.org/wiki/Serial_Line_Internet_Protocol): 
 
 These packing formats can then be used to send and receive messages over different communication protocols such as serial, UDP, or web sockets.
 
