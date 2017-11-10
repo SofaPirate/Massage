@@ -3,7 +3,7 @@ Massage
 
 *Massage* is a microcontroller message packer and parser for different types of formats and protocols. 
 
-A *massage* message always starts with an address string and is followed by a user defined number of bytes, ints, floats or longs.  The address string is used to route the message as in Open Sound Control (http://opensoundcontrol.org/introduction-osc).
+A *massage* message always starts with an address string and is followed by a user defined number of bytes, ints, floats or longs.  The address string is used to route the message as in Open Sound Control.
 
 There are two basic *massage* objetcs to work with *massages*:
 * *MassageParser* parses received data.
@@ -21,19 +21,21 @@ MassageParser
 
 `MassageParser ()`: Constructor.
  
-`parse (int data, callbackFunction callback)` : Reads one element of serial port, flushing previous message if needed. Returns true iff new message has arrived. Optional callback function will be called if new message has arrived. 
+`parse (int data, optional callbackFunction callback)` : processes one byte of data, flushing any previous completed message if needed. Returns true if a new message has arrived. Optional callback function will be called if a new message has arrived. 
+
+`parseStream (Stream* stream, optional callbackFunction callback)` : processes all the available bytes in a stream (Serial, UDP, etc), flushing any previous completed message if needed. Returns true if a new message has arrived. Optional callback function will be called if a new message has arrived. 
  
 `fullMatch (const char *address)` : Return true if current message matches "address".
  
 `dispatch (const char *address, callbackFunction callback)` : If current message matches "address", calls function "callback" and returns true.
  
-`nextByte ()` : Returns next byte in the parsed massage.
+`nextByte ()` : Returns the next byte in the parsed massage.
 
-`nextFloat()` : Returns next float in the parsed massage.
+`nextFloat()` : Returns the next float in the parsed massage.
 
-`nextInt ()` : Returns next int in the parsed massage.
+`nextInt ()` : Returns the next int in the parsed massage.
 
-`nextLong()` : Returns next long in the parsed massage.
+`nextLong()` : Returns the next long in the parsed massage.
  
 MassagePacker
 -------------
@@ -52,6 +54,18 @@ MassagePacker
 
 `endPacket()` : Ends a packet.
 
+`streamPacket(Stream* stream)` : Ends a packet and sends it out to a stream (Serial, UDP, etc).
+
+`streamEmpty(Stream* stream, const char *address)` : Stream (Serial, UDP, etc) a packet with no arguments.
+  
+`streamOneByte(Stream* stream, const char *address, uint8_t value)` : Stream (Serial, UDP, etc) a packet with a single byte value.
+
+`streamOneInt(Stream* stream, const char *address, int16_t value)` : Stream (Serial, UDP, etc) a packet with a single int value.
+
+`streamOneLong(Stream* stream, const char *address, int32_t value)` :   Stream (Serial, UDP, etc) a packet with a single long value.
+
+`streamOneFloat(Stream* stream, const char *address, float value)` : Stream (Serial, UDP, etc) a packet with a single float value.
+
 `packEmpty(const char *address)` : Create a packet with no arguments.
   
 `packOneByte(const char *address, uint8_t value)` : Create a packet with a single byte value.
@@ -65,6 +79,8 @@ MassagePacker
 `size()` : Returns the size of the packed massage.
 
 `buffer()` : Returns a pointer to the buffer.
+
+
 
 
 
